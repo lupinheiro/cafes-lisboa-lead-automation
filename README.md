@@ -16,9 +16,9 @@ comercial.
 |---|---|
 | 1. Arquitetura | ✅ Concluída |
 | 2. Stack tecnológico | ✅ Concluída |
-| 3. Repositório | 🔄 Em curso |
-| 4. Implementação | ⬜ Por iniciar |
-| 5. Testes & Docker | ⬜ Por iniciar |
+| 3. Repositório | ✅ Concluída |
+| 4. Implementação | ✅ Concluída (núcleo funcional) |
+| 5. Testes & Docker | 🔄 Em curso |
 | 6. Deployment | ⬜ Por iniciar |
 | 7. Documentação | ⬜ Por iniciar |
 | 8. Apresentação comercial | ⬜ Por iniciar |
@@ -82,19 +82,38 @@ GitHub Actions
 
 ## Como correr o projeto
 
-> Instruções completas chegam na fase 4 (implementação) e fase 6 (deployment).
-> Por agora, este repositório contém o esqueleto profissional do projeto.
+> A containerização (Docker Compose) chega na fase 5. Por agora, corre-se
+> localmente, com um PostgreSQL já disponível.
 
 ```bash
 # Backend
 cd backend
+cp ../.env.example .env   # preencher as chaves de API
 uv sync
-cp .env.example .env   # preencher as chaves de API
+uv run alembic upgrade head
+uv run uvicorn app.main:app --reload
 
-# Frontend
+# Frontend (noutro terminal)
 cd frontend
 npm install
+npm run dev
 ```
+
+A API fica disponível em `http://localhost:8000/api` e o dashboard em
+`http://localhost:5173`.
+
+### Endpoints principais
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/leads` | Lista leads (filtro opcional `?status=`) |
+| POST | `/api/leads/{id}/review` | Aprova/rejeita um rascunho pendente |
+| GET | `/api/dashboard/metrics` | Métricas agregadas para o dashboard |
+| GET | `/api/health` | Health check |
+
+O pipeline de prospeção corre automaticamente às segundas-feiras às 7h
+(configurável em `app/scheduler/jobs.py`), mas pode ser testado
+manualmente chamando `run_prospecting_cycle()` num shell Python.
 
 ## Licença
 
