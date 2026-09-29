@@ -9,13 +9,14 @@ Create Date: 2026-09-27
 import sqlalchemy as sa
 
 from alembic import op
+from sqlalchemy.dialects.postgresql import ENUM
 
 revision: str = "0001"
 down_revision: str | None = None
 branch_labels = None
 depends_on = None
 
-lead_status = sa.Enum(
+lead_status = ENUM(
     "new",
     "scored",
     "draft_ready",
@@ -25,6 +26,7 @@ lead_status = sa.Enum(
     "rejected",
     "opted_out",
     name="leadstatus",
+    create_type=False,
 )
 
 
