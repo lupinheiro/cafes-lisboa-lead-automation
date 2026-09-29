@@ -18,19 +18,20 @@ async def lifespan(app: FastAPI):
     scheduler.shutdown()
 
 
-app = FastAPI(title="Cafés Lisboa — Lead Automation", lifespan=lifespan)
+fastapi_app = FastAPI(title="Cafés Lisboa — Lead Automation", lifespan=lifespan)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[settings.frontend_origin],
+fastapi_app.include_router(leads.router, prefix="/api")
+fastapi_app.include_router(dashboard.router, prefix="/api")
+
+
+@fastapi_app.get("/api/health")
+async def health() -> dict:
+    return {"status": "ok"}
+
+
+app = CORSMiddleware(
+    app=fastapi_app,
+    allow_origins=[settings.frontend_origin, "http://127.0.0.1:5173"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(leads.router, prefix="/api")
-app.include_router(dashboard.router, prefix="/api")
-
-
-@app.get("/api/health")
-async def health() -> dict:
-    return {"status": "ok"}
